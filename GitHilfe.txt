@@ -1,0 +1,9 @@
+Git Hilfe:
+
+Hochladen:
+1. git add -A
+2. git commit -m "[Nachricht]"
+3. git push [GitName] [Branch=master]
+
+Runterladen:
+git pull [GitName]
