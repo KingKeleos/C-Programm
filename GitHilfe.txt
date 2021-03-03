@@ -6,4 +6,4 @@ Hochladen:
 3. git push [GitName] [Branch=master]
 
 Runterladen:
-git pull [GitName]
+git pull [GitName] [Branch=master]
