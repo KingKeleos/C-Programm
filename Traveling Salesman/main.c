@@ -3,9 +3,18 @@
 #include <stdarg.h>
 #include <string.h>
 
+double kuerzesteRoute ()
+{
+    char start [57]; //Der Längste Ortsname auf der Welt hat 58 Zeichen
+    printf("Nennen Sie mir die Startstadt:\n");
+    scanf ("%s", &start[0]);
+
+}
+
 int main()
 {
     printf("Hello world!\n");
+    kuerzesteRoute();
     return 0; //test
 }
 

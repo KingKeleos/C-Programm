@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1614941661 source:/home/binder/Documents/Programmieren/Traveling Salesman/main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<string.h>
+
