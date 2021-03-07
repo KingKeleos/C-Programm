@@ -1,6 +1,6 @@
-Berlin Hamburg Muenchen Koeln Frankfurt
-0 150 750 500 400
-150 0 800 350 450
-740 780 0 620 400
-490 350 630 0 230
-400 450 400 220 0
+Berlin  Hamburg  Muenchen  Koeln  Frankfurt
+0  150  750  500  400
+150  0  800  350  450
+740  780  0  620  400
+490  350  630  0  230
+400  450  400  220  0
