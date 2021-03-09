@@ -16,48 +16,73 @@ typedef struct // Forgegebene Struktur
 typedef struct // Forgegebene Struktur
 {
     int n; // Anzahl der Städte
-    char **cities; // Pointer auf Feld mit Städtenamen
-    Distance *distances; //Pointer auf Feld mit Entfernungen
+    char **cities; // Pointer auf Staedtenamen
+    Distance *distances; //Pointer auf Entfernungen vom Typ Distance
     } DistanceTable;
 
-int main(void)
+
+
+void readCities()
 {
-    printf("\"Traveling Salesman\"-Problem\n");
-    DistanceTable Table;
     char c;
+    char cities[15][128];
+    char string[128]=""; //String erstellen aus chars
+    char filename[128];
+    printf("Datei laden:\n\n");
+    printf("Wie heisst die Datei: ");
+    scanf("%s", filename);
     int i=0; // Zaehlervriable
-    int j=0;
     FILE *fptr;
-    fptr=fopen("../Staedte.txt","r"); //Hardcoded Datei Städte wird im darüber liegenden Ornder gelesen
+    fptr=fopen(filename,"r"); //Hardcoded Datei Städte wird im darüber liegenden Ornder gelesen
     if(fptr == NULL)
     {
         printf("Fehler, Datei nicht gefunden"); //Fehlerwurf, bei nicht existenter Datei
         exit(1);
     }
     fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
-    while ( (c=fgetc(fptr)) != EOF) //Jeden Character Lesen, bis zum Ende der Datei
+    while ( (c=fgetc(fptr)) != '\n') //Jeden Character Lesen, bis zum Ende der Datei
     {
-        while (c!='\n')
+        if (c==' ') // Lehrzeichen filtern
         {
-            if (c==' ') // Lehrzeichen filtern
-            {
-                i=i+1; // Staedte zaehlen
-            }
-            else
-            {
-                strcat(Table.cities, c);
-                printf("%s\n", Table.cities);
-            }
+            strcpy(cities[i], string);
+            strcpy(string,"");
+            i=i+1; // Staedte zaehlen
         }
-        i=0;
-        j=j+1;
+        else
+        {
+            strncat(string, &c,1);
+        }
     }
-    printf("Es wurden %d Staedte gefunden", Table.n); // Bestaetigung, dass alle Staedte gefunden wurden.
-    Table.cities="";
-    int fclose(fptr);
-    return 0;
+    printf("Staedte:\n");
+    for (int j=0; j<i;j++)
+    {
+        printf("%d. %s\n",j+1,cities[j]);
+    }
+    printf("Es wurden %d Staedte gefunden", i); // Bestaetigung, dass alle Staedte gefunden wurden.
+    fclose(fptr);
 }
 
-int readTable(char* filename)
+int main(void)
 {
+    Distance distances;
+    DistanceTable Table;
+    char cities[15][128];
+    char* citptr;
+    printf("\"Traveling Salesman\"-Problem\n");
+    printf("Tabelle aus Datei lesen? y/n:\n");
+    char ans;
+    do
+    {
+        scanf("%c", ans);
+        if (ans=='y')
+        {
+            readCities();
+        }
+        if (ans=='n')
+        {
+            printf("Hier endet das Programm.");
+            return 0;
+        }
+    } while  (ans != 'y' || ans !='n');
+    return 0;
 }
