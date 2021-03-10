@@ -20,35 +20,28 @@ typedef struct // Forgegebene Struktur
     Distance *distances; //Pointer auf Feld vom Typ Distance
     } DistanceTable;
 
-void readCities()
+void readCities(Distance distances[], DistanceTable tables[])
 {
     char c;
-    char cities[15][128];
     char string[128]=""; //String erstellen aus chars
     char filename[128];
-    Distance distances[15];
-    DistanceTable tables[15];
-    for (int j=0; j<15;j++)
-    {
-        tables[j].cities = &cities[j];
-    }
-    printf("%s", tables[0].cities);
     printf("Datei laden:\n\n");
-    printf("Wie heisst die Datei: ");
+    retry: printf("Wie heisst die Datei: ");
     scanf("%s", filename); //Nutzer kann seine Datei aussuchen
     int i=0; // Zaehlervriable
     FILE *fptr=fopen(filename,"r"); //Ausgewählte datei wird nur gelese;
     if(fptr == NULL)
     {
-        printf("Fehler, Datei nicht gefunden"); //Fehlerwurf, bei nicht existenter Zeile
+        printf("Fehler, Datei nicht gefunden!\n"); //Fehlerwurf, bei nicht existenter Zeile
+        goto retry;
         exit(1);
     }
     fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
-    do
+    while ( (c=fgetc(fptr)) != '\n') //Jeden Character Lesen, bis zum Ende der ersten Reihe, um nur Namen der Städte zu nehmen
         {
         if (c==' ') // Lehrzeichen filtern
         {
-            strcpy(cities[i], string);
+            strcpy(tables[i].cities, string);
             tables[i].n=i;
             strcpy(string,"");
             i=i+1; // Staedte zaehlen
@@ -58,43 +51,66 @@ void readCities()
             strncat(string, &c,1);
         }
     }
-    while ( (c=fgetc(fptr)) != '\n'); //Jeden Character Lesen, bis zum Ende der ersten Reihe
-
-    strcpy(cities[i], string);
+    strcpy(tables[i].cities, string);
     tables[i].n=i;
     strcpy(string,"");
     i=i+1;
-    //for (int k; k<i-1; k++)
-    //{
-    //       while ( (c=fgetc(fptr)) != EOF) //Jeden Character Lesen, bis zum Ende der Datei
-    //        {
-    //            if (c==' ') // Lehrzeichen filtern
-    //            {
-    //                strcpy(cities[i], string);
-    //                strcpy(string,"");
-    //                k=k+1; // Staedte zaehlen
-    //            }
-    //            else
-    //            {
-    //                strncat(string, &c,1);
-    //            }
-    //}
-    //}
     printf("Staedte:\n");
     for (int j=0; j<i;j++)
     {
-        printf("%d. %s\n",j+1,tables[j].cities);
+        printf("%d. %s\n",tables[j].n+1 ,tables[j].cities);
     }
-    printf("Es wurden %d Staedte gefunden", i); // Bestaetigung, dass alle Staedte gefunden wurden.
+    //int k=0;
+    int n=0;
+    int j=0;
+    while ( c!= EOF)
+    {
+        int k=0;
+           while ( (c=fgetc(fptr)) != '\n'&& c !=EOF) //Jeden Character Lesen, bis zum Ende der Datei, um nur die Zahlen zu lesen
+            {
+                if (c==' ') // Lehrzeichen filtern
+                {
+                    distances[n].from=j;
+                    distances[n].to=k;
+                    distances[n].dist = atoi(string); //String in Int convertieren
+                    strcpy(string,""); //String wieder leeren
+                    printf("%d ",distances[n].dist);
+                    k++; // Staedte zaehlen
+                    n++;
+                }
+                else
+                {
+                    strncat(string, &c,1);
+                }
+           }
+            distances[n].from=j;
+            distances[n].to=k;
+            distances[n].dist = atoi(string);
+            strcpy(string,""); //String wieder leeren
+            printf("%d \n",distances[n].dist);
+            n++;
+            j++;
+    }
+    printf("Es wurden %d Staedte gefunden\n", i); // Bestaetigung, dass alle Staedte gefunden wurden.
     fclose(fptr);
 }
 
 
 int main(void)
 {
-    Distance distances;
-    DistanceTable Table;
+    char cities[15][128];
+    Distance dist[256];
+    DistanceTable tables[15];
+    for (int j=0; j<15;j++)
+    {
+        tables[j].distances = &dist[j];
+        tables[j].cities = &cities[j];
+    }
     printf("\"Traveling Salesman\"-Problem\n");
-    readCities();
+    readCities(dist, tables);
+    for(int i=0; i<sizeof(dist);i++)
+    {
+        printf("%d %d %d\n",dist[i].from+1, dist[i].to+1, dist[i].dist);
+    }
     return 0;
 }
