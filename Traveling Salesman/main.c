@@ -28,6 +28,11 @@ void readCities()
     char filename[128];
     Distance distances[15];
     DistanceTable tables[15];
+    for (int j=0; j<15;j++)
+    {
+        tables[j].cities = &cities[j];
+    }
+    printf("%s", tables[0].cities);
     printf("Datei laden:\n\n");
     printf("Wie heisst die Datei: ");
     scanf("%s", filename); //Nutzer kann seine Datei aussuchen
@@ -35,12 +40,12 @@ void readCities()
     FILE *fptr=fopen(filename,"r"); //Ausgewählte datei wird nur gelese;
     if(fptr == NULL)
     {
-        printf("Fehler, Datei nicht gefunden"); //Fehlerwurf, bei nicht existenter Datei
+        printf("Fehler, Datei nicht gefunden"); //Fehlerwurf, bei nicht existenter Zeile
         exit(1);
     }
     fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
-    while ( (c=fgetc(fptr)) != '\n') //Jeden Character Lesen, bis zum Ende der ersten Reihe
-    {
+    do
+        {
         if (c==' ') // Lehrzeichen filtern
         {
             strcpy(cities[i], string);
@@ -53,25 +58,32 @@ void readCities()
             strncat(string, &c,1);
         }
     }
-    for (int k; k<i-1; k++)
-    while ( (c=fgetc(fptr)) != '\n') //Jeden Character Lesen, bis zum Ende der Datei
-    {
-        if (c==' ') // Lehrzeichen filtern
-        {
-            strcpy(cities[i], string);
-            strcpy(string,"");
-            i=i+1; // Staedte zaehlen
-        }
-        else
-        {
-            strncat(string, &c,1);
-        }
-    }
+    while ( (c=fgetc(fptr)) != '\n'); //Jeden Character Lesen, bis zum Ende der ersten Reihe
 
+    strcpy(cities[i], string);
+    tables[i].n=i;
+    strcpy(string,"");
+    i=i+1;
+    //for (int k; k<i-1; k++)
+    //{
+    //       while ( (c=fgetc(fptr)) != EOF) //Jeden Character Lesen, bis zum Ende der Datei
+    //        {
+    //            if (c==' ') // Lehrzeichen filtern
+    //            {
+    //                strcpy(cities[i], string);
+    //                strcpy(string,"");
+    //                k=k+1; // Staedte zaehlen
+    //            }
+    //            else
+    //            {
+    //                strncat(string, &c,1);
+    //            }
+    //}
+    //}
     printf("Staedte:\n");
     for (int j=0; j<i;j++)
     {
-        printf("%d. %s\n",j+1,cities[j]);
+        printf("%d. %s\n",j+1,tables[j].cities);
     }
     printf("Es wurden %d Staedte gefunden", i); // Bestaetigung, dass alle Staedte gefunden wurden.
     fclose(fptr);
