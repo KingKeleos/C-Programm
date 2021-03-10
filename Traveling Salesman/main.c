@@ -20,7 +20,7 @@ typedef struct // Forgegebene Struktur
     Distance *distances; //Pointer auf Feld vom Typ Distance
     } DistanceTable;
 
-void readCities(Distance distances[], DistanceTable tables[])
+int readCities(Distance distances[], DistanceTable tables[])
 {
     char c;
     char string[128]=""; //String erstellen aus chars
@@ -60,9 +60,11 @@ void readCities(Distance distances[], DistanceTable tables[])
     {
         printf("%d. %s\n",tables[j].n+1 ,tables[j].cities);
     }
+    printf("Es wurden %d Staedte gefunden\n", i); // Bestaetigung, dass alle Staedte gefunden wurden.
     //int k=0;
     int n=0;
     int j=0;
+    i=0;
     while ( c!= EOF)
     {
         int k=0;
@@ -74,6 +76,7 @@ void readCities(Distance distances[], DistanceTable tables[])
                     distances[n].to=k;
                     distances[n].dist = atoi(string); //String in Int convertieren
                     strcpy(string,""); //String wieder leeren
+                    tables[i].distances = &distances[n];
                     printf("%d ",distances[n].dist);
                     k++; // Staedte zaehlen
                     n++;
@@ -88,11 +91,13 @@ void readCities(Distance distances[], DistanceTable tables[])
             distances[n].dist = atoi(string);
             strcpy(string,""); //String wieder leeren
             printf("%d \n",distances[n].dist);
+            tables[i].distances = &distances[n];
             n++;
             j++;
+            i++;
     }
-    printf("Es wurden %d Staedte gefunden\n", i); // Bestaetigung, dass alle Staedte gefunden wurden.
     fclose(fptr);
+    return n;
 }
 
 
@@ -103,14 +108,26 @@ int main(void)
     DistanceTable tables[15];
     for (int j=0; j<15;j++)
     {
-        tables[j].distances = &dist[j];
         tables[j].cities = &cities[j];
     }
     printf("\"Traveling Salesman\"-Problem\n");
-    readCities(dist, tables);
-    for(int i=0; i<sizeof(dist);i++)
+    quest: printf("Wollen sie die Tablelle laden? y/n: ");
+    char ans;
+    scanf("%c", &ans);
+    int max;
+    switch(ans)
     {
-        printf("%d %d %d\n",dist[i].from+1, dist[i].to+1, dist[i].dist);
+        case 'y': max = readCities(dist, tables); break;
+        case 'n': printf("understandable have a great day\n"); return 0; break;
+        default: printf("Bitte nur mit y oder n antworten\n");goto quest; break;
+    }
+    for (int i=0; i<tables[0].n;i++)
+    {
+        printf("\n %d %s ", tables[i].n+1,tables[i].cities);
+        for(int j=0; j<5;j++)
+        {
+            printf("%d ", tables[i].distances[j-4].dist);
+        }
     }
     return 0;
 }
