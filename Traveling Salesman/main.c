@@ -200,23 +200,23 @@ void writeCities(DistanceTable* tables)
             for (int j=0; j<5-1;j++)
             {
                 int distform = tables->distances[k].dist;
-                printf("%d\n", distform);
                 itoa(distform, expoDist,10);
-                printf("%s\n", expoDist);
                 strncat(expoDist," ",1);
                 k++;
                 fputs(expoDist,fptr);
             }
             int distform = tables->distances[k].dist;
-            printf("%d\n", distform);
             itoa(distform, expoDist,10);
-            printf("%s\n", expoDist);
             k++;
             fputs(expoDist,fptr);
             fputs("\n",fptr);
         }
         fclose(fptr);
     }
+}
+void CheckChanges()
+{
+
 }
 
 int main()
@@ -232,12 +232,18 @@ int main()
         scanf("%s", &ans);
         switch(ans)
         {
-            case 'a': ptrTables = readCities(&tables); printf("%d", tables.n); break; //Function zum laden der Datei öffnen
-            case 'b': writeCities(&tables); break; //Funktion zum schreiben der Daten öffnen
+            case 'a': ptrTables = readCities(&tables);
+                      printf("%d", tables.n);
+                      break; //Function zum laden der Datei öffnen
+            case 'b': writeCities(&tables);
+                      break; //Funktion zum schreiben der Daten öffnen
             case 'c': break;
             case 'd': break;
             case 'e': break;
-            case 'f': printf("understandable have a great day\n"); return 0; break;
+            case 'f': printf("understandable have a great day\n");
+                      checkChanges();
+                      return 0;
+                      break;
             default: printf("Bitte nur mit a,b,c,d,e oder f antworten\n"); ans=NULL; break;
         }
     }
