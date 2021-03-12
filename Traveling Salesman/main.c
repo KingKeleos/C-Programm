@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <wchar.h>
+#include <stdbool.h>
 
 typedef struct // Forgegebene Struktur
 {
@@ -20,6 +21,13 @@ typedef struct // Forgegebene Struktur
     Distance *distances; //Pointer auf Feld vom Typ Distance
     } DistanceTable;
 
+bool checkReadability(FILE *fpointer)
+{
+    bool read;
+
+    return read;
+}
+
 void readCities(DistanceTable* tables)
 {
     char filename[128];
@@ -29,7 +37,8 @@ void readCities(DistanceTable* tables)
     printf("Datei laden:\n\n");
     printf("Wie heisst die Datei: ");
     scanf("%s", filename); //Nutzer kann seine Datei aussuchen
-    FILE *fptr=fopen(filename,"r"); //Ausgewählte datei wird nur gelese;
+    FILE *fptr=fopen(filename,"r"); //Ausgewählte datei wird nur gelesen
+    bool readable = checkReadability(fptr);
     if(fptr == NULL)
     {
         printf("Fehler, Datei nicht gefunden!\n"); //Fehlerwurf, bei nicht existenter Zeile
@@ -91,20 +100,32 @@ void readCities(DistanceTable* tables)
     free(tables);
 }
 
+void writeCities(DistanceTable* tables)
+{
+
+}
 
 int main()
 {
-    printf("\"Traveling Salesman\"-Problem\n");
+    printf("\"Traveling Salesman\"-Problem\n\n");
     DistanceTable tables;
-    quest: printf("Wollen sie die Tablelle laden? y/n: ");
     char ans;
-    scanf("%c", &ans);
-    int max;
-    switch(ans)
+    while (ans!='a'||ans!='b'||ans!='c'||ans!='d'||ans!='e'||ans!='f')
     {
-        case 'y': readCities(&tables); break;
-        case 'n': printf("understandable have a great day\n"); return 0; break;
-        default: printf("Bitte nur mit y oder n antworten\n");goto quest; break;
+        printf("Waehlen Sie ihre Aktion: \n(a) Entfernungstabelle laden\n(b) Entfernungstabellespeichern\n(c) Entfernungstabelle anzeigen\n(d) Entfernung wischen zwei Städten ändern\n(e) Kuerzeste Route berechnen\n(f) Programm beenden\n");
+        printf("\n Ihre Auswahl: ");
+        scanf("%c", &ans);
+        int max;
+        switch(ans)
+        {
+            case 'a': readCities(&tables); break;
+            case 'b': writeCities(&tables); break;
+            case 'c': break;
+            case 'd': break;
+            case 'e': break;
+            case 'f': printf("understandable have a great day\n"); return 0; break;
+            default: printf("Bitte nur mit a,b,c,d,e oder f antworten\n"); break;
+        }
     }
     /*for (int i=0; i<(tables.n);i++)
     {
