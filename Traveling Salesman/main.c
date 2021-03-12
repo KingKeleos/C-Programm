@@ -114,8 +114,7 @@ int main()
     {
         printf("Waehlen Sie ihre Aktion: \n(a) Entfernungstabelle laden\n(b) Entfernungstabellespeichern\n(c) Entfernungstabelle anzeigen\n(d) Entfernung wischen zwei Städten ändern\n(e) Kuerzeste Route berechnen\n(f) Programm beenden\n");
         printf("\n Ihre Auswahl: ");
-        scanf("%c", &ans);
-        int max;
+        scanf("%s", &ans);
         switch(ans)
         {
             case 'a': readCities(&tables); break;
@@ -124,7 +123,7 @@ int main()
             case 'd': break;
             case 'e': break;
             case 'f': printf("understandable have a great day\n"); return 0; break;
-            default: printf("Bitte nur mit a,b,c,d,e oder f antworten\n"); break;
+            default: printf("Bitte nur mit a,b,c,d,e oder f antworten\n"); ans=NULL; break;
         }
     }
     /*for (int i=0; i<(tables.n);i++)
