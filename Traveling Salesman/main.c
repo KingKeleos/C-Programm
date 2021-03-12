@@ -25,37 +25,43 @@ typedef struct // Forgegebene Struktur
 bool checkReadability(FILE *fpointer, DistanceTable* ptrTables) //Funktion Testet, ob die zu lesende Datei konform der Regeln ist
 {
     int lines=0; //Zeilen Zähler
-    int i=0;
+    int i=0; //Laufvariable
     char clipboard[128]={0}; //Zwischenspeicher für die komplette Zeile
     fseek(fpointer, 0, SEEK_SET); // Datei von Anfang an durchsuchen
-    while(fgets(clipboard, 128, fpointer)!=NULL)
+
+    while(fgets(clipboard, 128, fpointer)!=NULL) //While Schleife zählt die Anzahl der Zeilen
     {
         lines++;
     }
+
     fseek(fpointer, 0, SEEK_SET); // Datei von Anfang an durchsuchen
-    fgets(clipboard, 128, fpointer);
-    char *string=strtok(clipboard, " \t");
-    while (string != NULL)
+    fgets(clipboard, 128, fpointer); //Eine Zeile komplett in die Zwischenablage kopieren
+    char *string=strtok(clipboard, " \t"); //Zeile
+
+    while (string != NULL) //Solange nicht das Ende der Datei erreicht wurde...
     {
-        if(string[strlen(string)-1]=='\n')
+        if(string[strlen(string)-1]=='\n') //sobald das Ende der Zeile erreicht wurde...
         {
-            string[strlen(string)-1]=0;
+            string[strlen(string)-1]=0; //... Dem String das letzte Character entfernen -> Bug entfernen
         }
         i++;
         if (isdigit(*string)) //Wenn Integer in Namen -> Fehler
         {
             return false;
         }
-        string=strtok(NULL, " \t");
+        string=strtok(NULL, " \t"); //String wieder leeren
     }
+
     if (lines != i+1) //Matrix in der falschen Dimension -> Fehler
     {
         return false;
     }
+
     int n=0; // Zählervariable für die Zeilen
     int j=0; // Zählervariable für die Spalten
     string=strtok(NULL, " \t");
-    while(fgets(clipboard, 128, fpointer)!=0)
+
+    while(fgets(clipboard, 128, fpointer)!=0) //Solange eine neue Zeile gelesen werden kann wird eine neue gelesen
     {
         string=strtok(clipboard, " \t");
         while(string!=NULL)
@@ -68,16 +74,16 @@ bool checkReadability(FILE *fpointer, DistanceTable* ptrTables) //Funktion Teste
             {
                 return false;
             }
-            if (strcmp(string," ")==0)
+            if (strcmp(string," ")==0) //Wenn ein String leer ist -> Fehler
             {
                 return false;
             }
-            int negcomp = atoi(string);
+            int negcomp = atoi(string); //geladenen String in int convertieren
             if (negcomp<0) //Negative Zahl finden -> Fehler
             {
                 return false;
             }
-            string=strtok(NULL, " \t");
+            string=strtok(NULL, " \t"); //String leeren
             j++;
         }
         if(j!=i) //Tabelle nicht Vollständig -> Fehler
@@ -92,37 +98,37 @@ bool checkReadability(FILE *fpointer, DistanceTable* ptrTables) //Funktion Teste
 
 DistanceTable* readCities(DistanceTable* tables, char filename[]) //Funktion liest die komplette Dateim, wenn sie passt
 {
-    int lines=0;
+    int lines=0; //ZeilenzählerVariable
     char *string; //String erstellen aus chars
-    char clipboard[128]={0};
+    char clipboard[128]={0}; //zwischenspeicher
     printf("Datei laden:\n\n");
     printf("Wie heisst die Datei: ");
     scanf("%s", filename); //Nutzer kann seine Datei aussuchen
     FILE *fptr=fopen(filename,"r"); //Ausgewählte datei wird nur gelesen
-    bool readable = checkReadability(fptr, tables);
+    bool readable = checkReadability(fptr, tables); //Test, ob die Datei im richtigen "Format" ist
     if(fptr == NULL)
     {
         printf("Fehler, Datei nicht gefunden!\n"); //Fehlerwurf, bei nicht existenter Zeile
-        fflush(fptr);
         tables =NULL;
-        return tables;
+        return tables;//Null Pointer ausgeben bei Fehler
     }
     if (readable==false)
     {
         printf("Die Datei ist nicht zulaessig!");//Fehlerausgabe
-        exit(1);
+        tables =NULL;
+        return tables;//Null Pointer ausgeben bei Fehler
     }
     fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
     int i=0;
-    fgets(clipboard, 128, fptr);
+    fgets(clipboard, 128, fptr); //Zeile wird geladen
     string=strtok(clipboard, " \t");
     while(string!=NULL)
     {
-        lines++;
+        lines++; //Zählrvariable hochzähhlen
         string=strtok(NULL," \t");
     }
-    tables->cities = malloc(lines * sizeof(char*));
-    tables->n=lines;
+    tables->cities = malloc(lines * sizeof(char*)); //Speicher für die Städte wird angelegt
+    tables->n=lines; //Anzahl der Städte der Struktur über den Pointer zuweisen
     fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
     fgets(clipboard, 128, fptr);
     string=strtok(clipboard, " \t");
@@ -132,30 +138,29 @@ DistanceTable* readCities(DistanceTable* tables, char filename[]) //Funktion lie
         {
             string[strlen(string)-1]=0;
         }
-        tables->cities[i]= malloc((strlen(string)+1)*sizeof(char));
-        tables->cities[i]= strcpy(tables->cities[i],string);
+        tables->cities[i]= malloc((strlen(string)+1)*sizeof(char)); //Dem Namen der Städte passenden Speicher anlegen
+        tables->cities[i]= strcpy(tables->cities[i],string); //Über dem Pointer der Struktur den Namen der Stadt übergeben
         i++;
         string=strtok(NULL, " \t");
     }
     for (int j=0; j<i;j++)
     {
-        printf("%d %s\n",j+1, tables->cities[j]);
+        printf("%d %s\n",j+1, tables->cities[j]); //Anzahl der Staedte wiedergeben
     }
     printf("Es wurden %d Staedte gefunden\n", tables->n); // Bestaetigung, dass alle Staedte gefunden wurden.
-    //int k=0;
     int n=0;
     int j=0;
     int k=0;
-    tables->distances = malloc(tables->n*tables->n*sizeof(Distance));
+    tables->distances = malloc(tables->n*tables->n*sizeof(Distance)); //Speicher für die Distanzen Anlegen mit (tables->n)^2 weil jede Stadt mit Jeder
     string=strtok(NULL, " \t");
     while(fgets(clipboard, 128, fptr)!=0)
     {
         string=strtok(clipboard, " \t");
         while(string!=NULL)
         {
-            tables->distances[k].from=n;
-            tables->distances[k].to=j;
-            tables->distances[k].dist=atoi(string);
+            tables->distances[k].from=n;//Über den Tables Pointer dem Wert "from" von Distance den aktuellen Index zuweisen
+            tables->distances[k].to=j; //Über den Tables Pointer dem Wert "to" von Distance den aktuellen Index zuweisen
+            tables->distances[k].dist=atoi(string); //Gelesenen String als Int in über den Pointer in Distancectable der Distanz zuweisen.
             string=strtok(NULL, " \t");
             k++;
             j++;
@@ -163,48 +168,48 @@ DistanceTable* readCities(DistanceTable* tables, char filename[]) //Funktion lie
         j=0;
         n++;
     }
-    fclose(fptr);
-    return tables;
+    fclose(fptr); //Dateizugriff schließen, um Datei zu schreiben
+    return tables; //Pointer zurück geben
 }
 
 void writeCities(DistanceTable* tables)
 {
-    if (tables ==NULL)
+    if (!tables) //Null-Pointer -> kann nichts speichern.
     {
-        printf("Keine Daten zum Speichern vorhanden.\n");
+        printf("Keine Daten zum Speichern vorhanden.\n"); //
     }
     else
     {
-        char saveFilename[128];
+        char saveFilename[128]; //Speichername getrennt von Ladenamen
         char expoDist[15];
         printf("Wie soll die Datei heissen?");
-        scanf("%s", &saveFilename);
+        scanf("%s", &saveFilename); //Dateinamen des Users auslesen
         FILE *fptr=fopen(saveFilename,"w"); //Ausgewählte datei wird nur geschrieben
         fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
-        for (int i=0; i<5-1; i++)
+        for (int i=0; i<5-1; i++) //Bei jeder Stadt, bis auf der letzen..
         {
-            char *citieform = tables->cities[i];
-            strncat(citieform," ",1);
-            fputs(citieform,fptr);
+            char *citieform = tables->cities[i]; //citieform liest den Namen der Stadt aus
+            strncat(citieform," ",1); //Dem Namen der Stadt ein Leerzeichen hinzufügen um differenzieren zu können
+            fputs(citieform,fptr); //Transformierten Namen der Stadt in die Datei schreiben
         }
-        fputs(tables->cities[5-1],fptr);
-        fputs("\n",fptr);
+        fputs(tables->cities[5-1],fptr); //Letzte Stadt ohne Leerzeichen speichern
+        fputs("\n",fptr); //Zeilen Umbruch
         int k=0;
         for (int i =0; i<5;i++)
         {
             for (int j=0; j<5-1;j++)
             {
-                int distform = tables->distances[k].dist;
-                itoa(distform, expoDist,10);
-                strncat(expoDist," ",1);
+                int distform = tables->distances[k].dist; //Distanz aus der Struktur lesen
+                itoa(distform, expoDist,10); //Integer in String convertieren
+                strncat(expoDist," ",1); //Leerzeichen anhängen
                 k++;
-                fputs(expoDist,fptr);
+                fputs(expoDist,fptr); //In Datei ausgeben
             }
-            int distform = tables->distances[k].dist;
+            int distform = tables->distances[k].dist; //Letzer Schritt der Zeile wird ohne Leerzeichen  ausgeführt
             itoa(distform, expoDist,10);
             k++;
             fputs(expoDist,fptr);
-            fputs("\n",fptr);
+            fputs("\n",fptr); //Zeilenumbruch am Ende der Zeile
         }
         fclose(fptr);
     }
@@ -215,9 +220,9 @@ bool checkChanges(DistanceTable* tables, char filename[])
     char clipboard[128]={0};
     int lines=0;
     FILE *fptr=fopen(filename,"r"); //Zuletzt geladene Datei wird geöffnet
-    if(fptr == NULL)
+    if(fptr == NULL) //Wenn nichts geladen ist...
     {
-        return false;
+        return false;//...kann nichts gespeichert werden.
     }
     fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
     fgets(clipboard, 128, fptr);
@@ -227,9 +232,9 @@ bool checkChanges(DistanceTable* tables, char filename[])
         lines++;
         string=strtok(NULL," \t");
     }
-    if (lines!=5)
+    if (lines!=5) //Wenn die Anzahl der Zeilen sich von der letzten Datei unterscheidet
     {
-        return true;
+        return true; //Wahr ausgeben
     }
     fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
     fgets(clipboard, 128, fptr);
@@ -241,27 +246,33 @@ bool checkChanges(DistanceTable* tables, char filename[])
         {
             string[strlen(string)-1]=0;
         }
-        tables->cities[i]= malloc((strlen(string)+1)*sizeof(char));
-        tables->cities[i]= strcpy(tables->cities[i],string);
         i++;
         string=strtok(NULL, " \t");
     }
-    if (i!=(sizeof(tables->cities))+1)
+    if (i!=(sizeof(tables->cities))+1) //Wenn die Anzal der Einträge der Zeile sich geändert hat...
     {
-        return true;
+        return true; //..Wahr ausgeben
     }
-    fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
-    int k=0;
-    int n=0;
-    int j=0;
+    int k=0; //DistanzIndex
+    int n=0; //FromIndex
+    int j=0; //ToIndex
     while(fgets(clipboard, 128, fptr)!=0)
     {
         string=strtok(clipboard, " \t");
         while(string!=NULL)
         {
-            tables->distances[k].from=n;
-            tables->distances[k].to=j;
-            tables->distances[k].dist=atoi(string);
+            if(tables->distances[k].from!=n) //Wenn sich die Position geändert hat...
+            {
+                return true; //...Wahr ausgeben
+            }
+            if(tables->distances[k].to!=j) //Wenn sich die Position geändert hat...
+            {
+                return true; //...Wahr ausgeben
+            }
+            if(tables->distances[k].dist!=atoi(string)) //Wenn sich der Wert in der aktuellen Position geändert hat
+            {
+                return true; //...Wahr ausgeben
+            }
             string=strtok(NULL, " \t");
             k++;
             j++;
@@ -277,48 +288,56 @@ void freeSpace(DistanceTable* tables)
 {
     for (int i=0; i>tables->n;i++)
     {
-        free(tables->cities[i]);
+        free(tables->cities[i]); //Städte aus den Speicher werfen
     }
-    for (int i=0; i>(tables->n*tables->n);i++)
+    for (int i=0; i>(tables->n*tables->n);i++) // Die dazu gehörigen Werte aus dem Speicher werfen
     {
         free(tables->distances[i].from);
         free(tables->distances[i].to);
         free(tables->distances[i].dist);
     }
-    free(tables->n);
+    free(tables->n); //Zuletzt die Anzahl der Städte freigeben
 }
 
 int main()
 {
     char readFile[128];
     printf("\"Traveling Salesman\"-Problem\n");
-    DistanceTable tables;
+    DistanceTable tables; //Struktur DistanceTable als Teil der main definieren, damit sie drauf zugreigen kann
     DistanceTable *ptrTables=NULL;
-    char ans;
-    while (ans!='a'||ans!='b'||ans!='c'||ans!='d'||ans!='e'||ans!='f')
+    char ans; //Character, der die EIngaben des Nutzers liest
+    while (ans!='a'||ans!='b'||ans!='c'||ans!='d'||ans!='e'||ans!='f') //Schleife wieder holen, bis mindestens eins der Zeichen geschrieben wurde
     {
         printf("\nWaehlen Sie ihre Aktion: \n(a) Entfernungstabelle laden\n(b) Entfernungstabellespeichern\n(c) Entfernungstabelle anzeigen\n(d) Entfernung wischen zwei Städten ändern\n(e) Kuerzeste Route berechnen\n(f) Programm beenden\n");
         printf("\nIhre Auswahl: ");
-        scanf("%s", &ans);
-        switch(ans)
+        scanf("%s", &ans); //Antwort in den char ans lesen
+        switch(ans) //Abfrage aller Antwortmöglichkeiten
         {
-            case 'a': ptrTables = readCities(&tables, &readFile);
-                      break; //Function zum laden der Datei öffnen
-            case 'b': writeCities(&tables);
-                      break; //Funktion zum schreiben der Daten öffnen
+            case 'a': ptrTables = readCities(&tables, &readFile); //Function zum laden der Datei öffnen
+                      break;
+            case 'b': writeCities(&tables);//Funktion zum schreiben der Daten öffnen
+                      break;
             case 'c': break;
             case 'd': break;
             case 'e': break;
-            case 'f': printf("understandable have a great day\n");
-                      if (checkChanges(&tables, &readFile))
+            case 'f': if (checkChanges(&tables, &readFile)) //Erst schauen, ob die Daten ich geändert haben
                       {
-                        writeCities(&tables);
+                        char save;
+                        while (save!='y'||save!='n') //Antwortmöglichkeiten auf y oder n reduzieren und wiederholen
+                        {
+                            printf("Sie haben veraenderte ungespeicherte Daten, wollen Sie sie speichern? y/n:\n");
+                            scanf("%s",&save);
+                            if (save == 'y') //Wenn der Nutzer speichern möchte...
+                            {
+                                writeCities(&tables); //...Speicherfunktion aufrufen
+                            }
+                        }
                       }
-                      freeSpace(&tables);
+                      freeSpace(&tables); //..Nach beendigung Speicher wieder frei geben
+                      printf("understandable have a great day\n"); //Nachricht, dass das Programm beendet wurde
                       return 0;
                       break;
-            default: printf("Bitte nur mit a,b,c,d,e oder f antworten\n"); ans=NULL; break;
+            default: printf("Bitte nur mit a,b,c,d,e oder f antworten\n"); ans=NULL; break; //Abfang, wenn ein anderer Buchstabe gesendet wurde
         }
     }
-    return 0;
 }
