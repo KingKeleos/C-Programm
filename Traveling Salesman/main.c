@@ -22,7 +22,7 @@ typedef struct // Forgegebene Struktur
     Distance *distances; //Pointer auf Feld vom Typ Distance
     } DistanceTable;
 
-bool checkReadability(FILE *fpointer, DistanceTable* ptrTables)
+bool checkReadability(FILE *fpointer, DistanceTable* ptrTables) //Funktion Testet, ob die zu lesende Datei konform der Regeln ist
 {
     int lines=0; //Zeilen Zähler
     int i=0;
@@ -90,9 +90,8 @@ bool checkReadability(FILE *fpointer, DistanceTable* ptrTables)
     return true;
 }
 
-DistanceTable* readCities(DistanceTable* tables)
+DistanceTable* readCities(DistanceTable* tables, char filename[]) //Funktion liest die komplette Dateim, wenn sie passt
 {
-    char filename[128];
     int lines=0;
     char *string; //String erstellen aus chars
     char clipboard[128]={0};
@@ -165,7 +164,6 @@ DistanceTable* readCities(DistanceTable* tables)
         n++;
     }
     fclose(fptr);
-    printf("%d",tables->n);
     return tables;
 }
 
@@ -177,14 +175,11 @@ void writeCities(DistanceTable* tables)
     }
     else
     {
-        char filename[128];
-        int lines=0;
+        char saveFilename[128];
         char expoDist[15];
-        char *string; //String erstellen aus chars
-        char clipboard[128]={0};
         printf("Wie soll die Datei heissen?");
-        scanf("%s", &filename);
-        FILE *fptr=fopen(filename,"w"); //Ausgewählte datei wird nur geschrieben
+        scanf("%s", &saveFilename);
+        FILE *fptr=fopen(saveFilename,"w"); //Ausgewählte datei wird nur geschrieben
         fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
         for (int i=0; i<5-1; i++)
         {
@@ -214,13 +209,65 @@ void writeCities(DistanceTable* tables)
         fclose(fptr);
     }
 }
-void CheckChanges()
+bool checkChanges(DistanceTable* tables, char filename[])
 {
+    char *string;
+    char clipboard[128]={0};
+    int lines;
+    FILE *fptr=fopen(filename,"r"); //Zuletzt geladene Datei wird geöffnet
+    if(fptr == NULL)
+    {
+        return false;
+    }
+    fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
+    fgets(clipboard, 128, fptr);
+    string=strtok(clipboard, " \t");
+    while(string!=NULL)
+    {
+        lines++;
+        string=strtok(NULL," \t");
+    }
+    if (lines!=tables->n)
+    {
+        return true;
+    }
+    /*while(fgets(clipboard, 128, fptr)!=0)
+    {
+        string=strtok(clipboard, " \t");
+        while(string!=NULL)
+        {
+            tables->distances[k].from=n;
+            tables->distances[k].to=j;
+            tables->distances[k].dist=atoi(string);
+            string=strtok(NULL, " \t");
+            k++;
+            j++;
+        }
+        j=0;
+        n++;
+    }*/
 
+    return false;
+}
+
+void freeSpace(DistanceTable* tables)
+{
+    for (int i=0; i>tables->n;i++)
+    {
+        free(tables->cities[i]);
+    }
+    for (int i=0; i>(tables->n*tables->n);i++)
+    {
+        free(tables->distances[i].from);
+        free(tables->distances[i].to);
+        free(tables->distances[i].dist);
+    }
+    free(tables->n);
 }
 
 int main()
 {
+    char readFile[128];
     printf("\"Traveling Salesman\"-Problem\n");
     DistanceTable tables;
     DistanceTable *ptrTables=NULL;
@@ -232,8 +279,7 @@ int main()
         scanf("%s", &ans);
         switch(ans)
         {
-            case 'a': ptrTables = readCities(&tables);
-                      printf("%d", tables.n);
+            case 'a': ptrTables = readCities(&tables, &readFile);
                       break; //Function zum laden der Datei öffnen
             case 'b': writeCities(&tables);
                       break; //Funktion zum schreiben der Daten öffnen
@@ -241,7 +287,11 @@ int main()
             case 'd': break;
             case 'e': break;
             case 'f': printf("understandable have a great day\n");
-                      checkChanges();
+                      if (checkChanges(&tables, &readFile))
+                      {
+                        writeCities(&tables);
+                      }
+                      freeSpace(&tables);
                       return 0;
                       break;
             default: printf("Bitte nur mit a,b,c,d,e oder f antworten\n"); ans=NULL; break;
