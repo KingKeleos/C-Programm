@@ -213,7 +213,7 @@ bool checkChanges(DistanceTable* tables, char filename[])
 {
     char *string;
     char clipboard[128]={0};
-    int lines;
+    int lines=0;
     FILE *fptr=fopen(filename,"r"); //Zuletzt geladene Datei wird geöffnet
     if(fptr == NULL)
     {
@@ -227,11 +227,34 @@ bool checkChanges(DistanceTable* tables, char filename[])
         lines++;
         string=strtok(NULL," \t");
     }
-    if (lines!=tables->n)
+    if (lines!=5)
     {
         return true;
     }
-    /*while(fgets(clipboard, 128, fptr)!=0)
+    fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
+    fgets(clipboard, 128, fptr);
+    string=strtok(clipboard, " \t");
+    int i=0;
+    while (string != NULL)
+    {
+        if(string[strlen(string)-1]=='\n')
+        {
+            string[strlen(string)-1]=0;
+        }
+        tables->cities[i]= malloc((strlen(string)+1)*sizeof(char));
+        tables->cities[i]= strcpy(tables->cities[i],string);
+        i++;
+        string=strtok(NULL, " \t");
+    }
+    if (i!=(sizeof(tables->cities))+1)
+    {
+        return true;
+    }
+    fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
+    int k=0;
+    int n=0;
+    int j=0;
+    while(fgets(clipboard, 128, fptr)!=0)
     {
         string=strtok(clipboard, " \t");
         while(string!=NULL)
@@ -245,7 +268,7 @@ bool checkChanges(DistanceTable* tables, char filename[])
         }
         j=0;
         n++;
-    }*/
+    }
 
     return false;
 }
