@@ -165,19 +165,35 @@ DistanceTable* readCities(DistanceTable* tables)
         n++;
     }
     fclose(fptr);
+    printf("%d",tables->n);
     return tables;
 }
 
 void writeCities(DistanceTable* tables)
 {
     printf("%d\n", tables->n);
-    for (int i=0; i<(tables->n);i++)
+    if (tables ==NULL)
     {
-        printf("\n %s ",tables->cities[i]);
-        for(int j=0; j<(tables->n*tables->n);j++)
+        printf("Keine Daten zum Speichern vorhanden.\n");
+    }
+    else
+    {
+        char filename[128];
+        int lines=0;
+        char *string; //String erstellen aus chars
+        char clipboard[128]={0};
+        printf("Wie soll die Datei heissen?");
+        scanf("%s", &filename);
+        FILE *fptr=fopen(filename,"w"); //Ausgewählte datei wird nur geschrieben
+        fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
+        printf("%d ", tables->n);
+        printf("%s", tables->cities[0]);
+        for (int i=0; i<tables->n; i++)
         {
-            printf("%d ",tables->distances[j].dist);
+            printf("%s ", tables->cities[i]);
+            fputs(tables->cities[i],fptr);
         }
+        fclose(fptr);
     }
 }
 
@@ -194,7 +210,7 @@ int main()
         scanf("%s", &ans);
         switch(ans)
         {
-            case 'a': ptrTables = readCities(&tables); break; //Function zum laden der Datei öffnen
+            case 'a': ptrTables = readCities(&tables); printf("%d", tables.n); break; //Function zum laden der Datei öffnen
             case 'b': writeCities(&tables); break; //Funktion zum schreiben der Daten öffnen
             case 'c': break;
             case 'd': break;
@@ -203,12 +219,5 @@ int main()
             default: printf("Bitte nur mit a,b,c,d,e oder f antworten\n"); ans=NULL; break;
         }
     }
-    for (int i=0; i<(tables.n);i++)
-    {
-        printf("\n%d %s ",tables.n,tables.cities[i]);
-        for(int j=0; j<(tables.n*tables.n);j++)
-        {
-            printf("%d ",tables.distances[j].dist);
-        }}
     return 0;
 }
