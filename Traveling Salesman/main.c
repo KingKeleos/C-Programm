@@ -171,7 +171,6 @@ DistanceTable* readCities(DistanceTable* tables)
 
 void writeCities(DistanceTable* tables)
 {
-    printf("%d\n", tables->n);
     if (tables ==NULL)
     {
         printf("Keine Daten zum Speichern vorhanden.\n");
@@ -186,12 +185,20 @@ void writeCities(DistanceTable* tables)
         scanf("%s", &filename);
         FILE *fptr=fopen(filename,"w"); //Ausgewählte datei wird nur geschrieben
         fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
-        printf("%d ", tables->n);
-        printf("%s", tables->cities[0]);
-        for (int i=0; i<tables->n; i++)
+        for (int i=0; i<5-1; i++)
         {
-            printf("%s ", tables->cities[i]);
-            fputs(tables->cities[i],fptr);
+            char *citieform = tables->cities[i];
+            strncat(citieform," ",1);
+            printf("%s", citieform);
+            fputs(citieform,fptr);
+        }
+        fputs(tables->cities[5-1],fptr);
+        for (int i =0; i<5-1;i++)
+        {
+            for (int j=0; j<5-1;j++)
+            {
+                printf("Werte drucken");
+            }
         }
         fclose(fptr);
     }
