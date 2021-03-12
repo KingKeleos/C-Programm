@@ -179,6 +179,7 @@ void writeCities(DistanceTable* tables)
     {
         char filename[128];
         int lines=0;
+        char expoDist[15];
         char *string; //String erstellen aus chars
         char clipboard[128]={0};
         printf("Wie soll die Datei heissen?");
@@ -189,16 +190,30 @@ void writeCities(DistanceTable* tables)
         {
             char *citieform = tables->cities[i];
             strncat(citieform," ",1);
-            printf("%s", citieform);
             fputs(citieform,fptr);
         }
         fputs(tables->cities[5-1],fptr);
-        for (int i =0; i<5-1;i++)
+        fputs("\n",fptr);
+        int k=0;
+        for (int i =0; i<5;i++)
         {
             for (int j=0; j<5-1;j++)
             {
-                printf("Werte drucken");
+                int distform = tables->distances[k].dist;
+                printf("%d\n", distform);
+                itoa(distform, expoDist,10);
+                printf("%s\n", expoDist);
+                strncat(expoDist," ",1);
+                k++;
+                fputs(expoDist,fptr);
             }
+            int distform = tables->distances[k].dist;
+            printf("%d\n", distform);
+            itoa(distform, expoDist,10);
+            printf("%s\n", expoDist);
+            k++;
+            fputs(expoDist,fptr);
+            fputs("\n",fptr);
         }
         fclose(fptr);
     }
