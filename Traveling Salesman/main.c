@@ -346,6 +346,12 @@ int main()
                             {
                                 writeCities(&tables); //...Speicherfunktion aufrufen
                             }
+                            else
+                            {
+                                freeSpace(&tables); //..Nach beendigung Speicher wieder frei geben
+                                printf("understandable have a great day\n"); //Nachricht, dass das Programm beendet wurde
+                                return 0;
+                            }
                         }
                       }
                       freeSpace(&tables); //..Nach beendigung Speicher wieder frei geben
