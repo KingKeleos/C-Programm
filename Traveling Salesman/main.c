@@ -209,7 +209,10 @@ void writeCities(DistanceTable* tables)
             sprintf(expoDist, "%d",distform);
             k++;
             fputs(expoDist,fptr);
-            fputs("\n",fptr); //Zeilenumbruch am Ende der Zeile
+            if (i<5-1) //letzten Zeilenummbruch abfangen, damit Matrix erhalten bleibt
+            {
+                fputs("\n",fptr); //Zeilenumbruch am Ende der Zeile
+            }
         }
         fclose(fptr);
     }
