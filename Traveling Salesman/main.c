@@ -101,20 +101,20 @@ DistanceTable* readCities(DistanceTable* tables, char filename[]) //Funktion lie
     int lines=0; //ZeilenzählerVariable
     char *string; //String erstellen aus chars
     char clipboard[128]={0}; //zwischenspeicher
-    printf("Datei laden:\n\n");
+    printf("\n\n---------------| Datei laden |--------------\n\n");
     printf("Wie heisst die Datei: ");
     scanf("%s", filename); //Nutzer kann seine Datei aussuchen
     FILE *fptr=fopen(filename,"r"); //Ausgewählte datei wird nur gelesen
     bool readable = checkReadability(fptr, tables); //Test, ob die Datei im richtigen "Format" ist
     if(fptr == NULL)
     {
-        printf("Fehler, Datei nicht gefunden!\n"); //Fehlerwurf, bei nicht existenter Zeile
+        printf("\n !-------| Fehler, Datei nicht gefunden |------!\n"); //Fehlerwurf, bei nicht existenter Zeile
         tables =NULL;
         return tables;//Null Pointer ausgeben bei Fehler
     }
     if (readable==false)
     {
-        printf("Die Datei ist nicht zulaessig!");//Fehlerausgabe
+        printf("!------| Die Datei ist nicht zulaessig! |-----!\n");//Fehlerausgabe bei nicht passender Datei
         tables =NULL;
         return tables;//Null Pointer ausgeben bei Fehler
     }
@@ -143,15 +143,18 @@ DistanceTable* readCities(DistanceTable* tables, char filename[]) //Funktion lie
         i++;
         string=strtok(NULL, " \t");
     }
+    printf("_____________________________________________\n");
+    printf("Es wurden %d Staedte gefunden\n", tables->n); // Bestaetigung, dass alle Staedte gefunden wurden.
+    printf("_____________________________________________\n");
     for (int j=0; j<i;j++)
     {
         printf("%d %s\n",j+1, tables->cities[j]); //Anzahl der Staedte wiedergeben
     }
-    printf("Es wurden %d Staedte gefunden\n", tables->n); // Bestaetigung, dass alle Staedte gefunden wurden.
+    printf("_____________________________________________\n");
     int n=0;
     int j=0;
     int k=0;
-    tables->distances = malloc(tables->n*tables->n*sizeof(Distance)); //Speicher für die Distanzen Anlegen mit (tables->n)^2 weil jede Stadt mit Jeder
+    tables->distances = malloc(tables->n*tables->n*sizeof(Distance)); //Speicher für die Distanzen Anlegen mit (tables->n)^2 weil jede Stadt mit Jeder eine Distanz hat
     string=strtok(NULL, " \t");
     while(fgets(clipboard, 128, fptr)!=0)
     {
@@ -174,7 +177,7 @@ DistanceTable* readCities(DistanceTable* tables, char filename[]) //Funktion lie
 
 void writeCities(DistanceTable* tables)
 {
-    if (!tables) //Null-Pointer -> kann nichts speichern.
+    if (tables->n==0) //Null-Pointer -> kann nichts speichern.
     {
         printf("Keine Daten zum Speichern vorhanden.\n"); //
     }
@@ -182,7 +185,8 @@ void writeCities(DistanceTable* tables)
     {
         char saveFilename[128]; //Speichername getrennt von Ladenamen
         char expoDist[15];
-        printf("Wie soll die Datei heissen?");
+        printf("-----------| Daten Speichern |----------\n\n");
+        printf("Wie soll die Datei heissen? -> ");
         scanf("%s", &saveFilename); //Dateinamen des Users auslesen
         FILE *fptr=fopen(saveFilename,"w"); //Ausgewählte datei wird nur geschrieben
         fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
@@ -195,9 +199,9 @@ void writeCities(DistanceTable* tables)
         fputs(tables->cities[5-1],fptr); //Letzte Stadt ohne Leerzeichen speichern
         fputs("\n",fptr); //Zeilen Umbruch
         int k=0;
-        for (int i =0; i<5;i++)
+        for (int i =0; i<5;i++) //5=tables->n
         {
-            for (int j=0; j<5-1;j++)
+            for (int j=0; j<5-1;j++) //5tables->n
             {
                 int distform = tables->distances[k].dist; //Distanz aus der Struktur lesen
                 sprintf(expoDist, "%d",distform);
@@ -209,12 +213,13 @@ void writeCities(DistanceTable* tables)
             sprintf(expoDist, "%d",distform);
             k++;
             fputs(expoDist,fptr);
-            if (i<5-1) //letzten Zeilenummbruch abfangen, damit Matrix erhalten bleibt
+            if (i<5-1) //letzten Zeilenummbruch abfangen, damit Matrix erhalten bleibt //5=tables->n
             {
                 fputs("\n",fptr); //Zeilenumbruch am Ende der Zeile
             }
         }
         fclose(fptr);
+        printf("Daten in %s gespeichert", saveFilename);
     }
 }
 bool checkChanges(DistanceTable* tables, char filename[])
@@ -311,8 +316,15 @@ int main()
     char ans; //Character, der die EIngaben des Nutzers liest
     while (ans!='a'||ans!='b'||ans!='c'||ans!='d'||ans!='e'||ans!='f') //Schleife wieder holen, bis mindestens eins der Zeichen geschrieben wurde
     {
-        printf("\nWaehlen Sie ihre Aktion: \n(a) Entfernungstabelle laden\n(b) Entfernungstabellespeichern\n(c) Entfernungstabelle anzeigen\n(d) Entfernung wischen zwei Städten ändern\n(e) Kuerzeste Route berechnen\n(f) Programm beenden\n");
-        printf("\nIhre Auswahl: ");
+        printf("\n---------| Waehlen Sie ihre Aktion |---------\n\n");
+        printf("(a) Entfernungstabelle laden\n");
+        printf("(b) Entfernungstabellespeichern\n");
+        printf("(c) Entfernungstabelle anzeigen\n");
+        printf("(d) Entfernung wischen zwei Staedten aendern\n");
+        printf("(e) Kuerzeste Route berechnen\n");
+        printf("(f) Programm beenden\n");
+        printf("\n--------------| Ihre Auswahl |---------------\n");
+        printf("-> ");
         scanf("%s", &ans); //Antwort in den char ans lesen
         switch(ans) //Abfrage aller Antwortmöglichkeiten
         {
