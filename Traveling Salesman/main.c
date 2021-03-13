@@ -323,7 +323,7 @@ int main()
             case 'c': break;
             case 'd': break;
             case 'e': break;
-            case 'f': if (checkChanges(&tables, &readFile)) //Erst schauen, ob die Daten ich geändert haben
+            case 'f': if (checkChanges(&tables, &readFile)&& ptrTables) //Erst schauen, ob die Daten ich geändert haben
                       {
                         char save;
                         while (save!='y'||save!='n') //Antwortmöglichkeiten auf y oder n reduzieren und wiederholen
