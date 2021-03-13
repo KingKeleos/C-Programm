@@ -101,20 +101,20 @@ DistanceTable* readCities(DistanceTable* tables, char filename[]) //Funktion lie
     int lines=0; //ZeilenzählerVariable
     char *string; //String erstellen aus chars
     char clipboard[128]={0}; //zwischenspeicher
-    printf("Datei laden:\n\n");
+    printf("\n\n---------------| Datei laden |--------------\n\n");
     printf("Wie heisst die Datei: ");
     scanf("%s", filename); //Nutzer kann seine Datei aussuchen
     FILE *fptr=fopen(filename,"r"); //Ausgewählte datei wird nur gelesen
     bool readable = checkReadability(fptr, tables); //Test, ob die Datei im richtigen "Format" ist
     if(fptr == NULL)
     {
-        printf("Fehler, Datei nicht gefunden!\n"); //Fehlerwurf, bei nicht existenter Zeile
+        printf("\n !-------| Fehler, Datei nicht gefunden |------!\n"); //Fehlerwurf, bei nicht existenter Zeile
         tables =NULL;
         return tables;//Null Pointer ausgeben bei Fehler
     }
     if (readable==false)
     {
-        printf("Die Datei ist nicht zulaessig!");//Fehlerausgabe
+        printf("!------| Die Datei ist nicht zulaessig! |-----!\n");//Fehlerausgabe bei nicht passender Datei
         tables =NULL;
         return tables;//Null Pointer ausgeben bei Fehler
     }
@@ -143,15 +143,18 @@ DistanceTable* readCities(DistanceTable* tables, char filename[]) //Funktion lie
         i++;
         string=strtok(NULL, " \t");
     }
+    printf("_____________________________________________\n");
+    printf("Es wurden %d Staedte gefunden\n", tables->n); // Bestaetigung, dass alle Staedte gefunden wurden.
+    printf("_____________________________________________\n");
     for (int j=0; j<i;j++)
     {
         printf("%d %s\n",j+1, tables->cities[j]); //Anzahl der Staedte wiedergeben
     }
-    printf("Es wurden %d Staedte gefunden\n", tables->n); // Bestaetigung, dass alle Staedte gefunden wurden.
+    printf("_____________________________________________\n");
     int n=0;
     int j=0;
     int k=0;
-    tables->distances = malloc(tables->n*tables->n*sizeof(Distance)); //Speicher für die Distanzen Anlegen mit (tables->n)^2 weil jede Stadt mit Jeder
+    tables->distances = malloc(tables->n*tables->n*sizeof(Distance)); //Speicher für die Distanzen Anlegen mit (tables->n)^2 weil jede Stadt mit Jeder eine Distanz hat
     string=strtok(NULL, " \t");
     while(fgets(clipboard, 128, fptr)!=0)
     {
@@ -174,7 +177,7 @@ DistanceTable* readCities(DistanceTable* tables, char filename[]) //Funktion lie
 
 void writeCities(DistanceTable* tables)
 {
-    if (!tables) //Null-Pointer -> kann nichts speichern.
+    if (tables->n==0) //Null-Pointer -> kann nichts speichern.
     {
         printf("Keine Daten zum Speichern vorhanden.\n"); //
     }
@@ -182,37 +185,41 @@ void writeCities(DistanceTable* tables)
     {
         char saveFilename[128]; //Speichername getrennt von Ladenamen
         char expoDist[15];
-        printf("Wie soll die Datei heissen?");
+        printf("-----------| Daten Speichern |----------\n\n");
+        printf("Wie soll die Datei heissen? -> ");
         scanf("%s", &saveFilename); //Dateinamen des Users auslesen
         FILE *fptr=fopen(saveFilename,"w"); //Ausgewählte datei wird nur geschrieben
         fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
-        for (int i=0; i<5-1; i++) //Bei jeder Stadt, bis auf der letzen..
+        for (int i=0; i<tables->n-1; i++) //Bei jeder Stadt, bis auf der letzen..
         {
             char *citieform = tables->cities[i]; //citieform liest den Namen der Stadt aus
             strncat(citieform," ",1); //Dem Namen der Stadt ein Leerzeichen hinzufügen um differenzieren zu können
             fputs(citieform,fptr); //Transformierten Namen der Stadt in die Datei schreiben
         }
-        fputs(tables->cities[5-1],fptr); //Letzte Stadt ohne Leerzeichen speichern
+        fputs(tables->cities[tables->n-1],fptr); //Letzte Stadt ohne Leerzeichen speichern
         fputs("\n",fptr); //Zeilen Umbruch
         int k=0;
-        for (int i =0; i<5;i++)
+        for (int i =0; i<tables->n;i++) //5=tables->n
         {
-            for (int j=0; j<5-1;j++)
+            for (int j=0; j<tables->n-1;j++) //5tables->n
             {
                 int distform = tables->distances[k].dist; //Distanz aus der Struktur lesen
-                sprintf(expoDist, "%d", distform);
-                //itoa(distform, expoDist,10); //Integer in String convertieren
+                sprintf(expoDist, "%d",distform);
                 strncat(expoDist," ",1); //Leerzeichen anhängen
                 k++;
                 fputs(expoDist,fptr); //In Datei ausgeben
             }
             int distform = tables->distances[k].dist; //Letzer Schritt der Zeile wird ohne Leerzeichen  ausgeführt
-            sprintf(expoDist, "%d", distform);
+            sprintf(expoDist, "%d",distform);
             k++;
             fputs(expoDist,fptr);
-            fputs("\n",fptr); //Zeilenumbruch am Ende der Zeile
+            if (i<tables->n-1) //letzten Zeilenummbruch abfangen, damit Matrix erhalten bleibt //5=tables->n
+            {
+                fputs("\n",fptr); //Zeilenumbruch am Ende der Zeile
+            }
         }
         fclose(fptr);
+        printf("Daten in %s gespeichert", saveFilename);
     }
 }
 bool checkChanges(DistanceTable* tables, char filename[])
@@ -233,7 +240,7 @@ bool checkChanges(DistanceTable* tables, char filename[])
         lines++;
         string=strtok(NULL," \t");
     }
-    if (lines!=5) //Wenn die Anzahl der Zeilen sich von der letzten Datei unterscheidet
+    if (lines!=tables->n) //Wenn die Anzahl der Zeilen sich von der letzten Datei unterscheidet
     {
         return true; //Wahr ausgeben
     }
@@ -300,15 +307,19 @@ void freeSpace(DistanceTable* tables)
     free(tables->n); //Zuletzt die Anzahl der Städte freigeben
 }
 
+
 void heuristic(DistanceTable* tables, int start)
 {
 int currentCity = start;
-//printf("%d\n",currentCity);
+/*printf("%d\n",start);
+printf("%d\n",currentCity);*/
 int sumOfDistance=0;
 int usedCity[tables->n];
 int compareDist = 2147483647;
 int compareCity;
 int testtest;
+/*for(int i=0; i<tables->n*tables->n; i++)
+    printf("%d: %d\n", i, tables->distances[i].dist);*/
 for(int i=0; i<tables->n; i++)
 {
     usedCity[i]=0;
@@ -354,42 +365,42 @@ currentCity=compareCity;
 printf("\n Die kuerzeste Route berechnet nach dem heuristischen Verfahren mit der\nStartstadt %s betraegt: %d \n", tables->cities[start], sumOfDistance);
 }
 
-void exact()
+
+void exact(DistanceTable* tables, int start)
 {
 
 }
 
 void shortestRoute(DistanceTable* tables)
 {
-    char start[58];
+    int start;
     int pos;
     char methode;
     int compare=0;
+    printf("\n\n--------------| Route berechnen |------------\n\n");
     do
     {
     printf("Nennen Sie mir die Startstadt aus folgender Liste:\n");
     for(int i=0; i<tables->n; i++)
     {
-        printf(" %s", tables->cities[i]);
+        printf("%d: %s\n", i, tables->cities[i]);
     }
     printf("\n");
-    scanf("%s", &start);
+    scanf("%d", &start);
 
         for(int i=0; i<tables->n; i++)
         {
-            if(strstr(start, tables->cities[i]))
+            if(start == tables->distances[i].to)
             {
-                pos = i;
                 i=tables->n;
-                printf("%s ist als Startstadt festgelegt.\n", start);
+                printf("%s ist als Startstadt festgelegt.\n", tables->cities[start]);
                 compare=1;
             }
         }
     if(compare==0)
     printf("Die Startstadt ist nicht in der Liste enthalten.\n");
     }while(compare!=1);
-    int abcde=pos;
-    printf("%d\n", abcde);
+    int give = start;
     do
     {
     printf("Waehlen Sie nun die Berechnungsmethode:\n");
@@ -398,8 +409,8 @@ void shortestRoute(DistanceTable* tables)
     scanf("%s", &methode);
     switch(methode)
         {
-    case 'a': heuristic(tables, abcde); break;
-    case 'b': exact; break;
+    case 'a': heuristic(tables, give); break;
+    case 'b': exact(tables, give); break;
     default: printf("Keine gueltige Eingabe.\n"); break;
     }
     }while(methode !='a' && methode != 'b');
@@ -414,8 +425,15 @@ int main()
     char ans; //Character, der die EIngaben des Nutzers liest
     while (ans!='a'||ans!='b'||ans!='c'||ans!='d'||ans!='e'||ans!='f') //Schleife wieder holen, bis mindestens eins der Zeichen geschrieben wurde
     {
-        printf("\nWaehlen Sie ihre Aktion: \n(a) Entfernungstabelle laden\n(b) Entfernungstabellespeichern\n(c) Entfernungstabelle anzeigen\n(d) Entfernung wischen zwei Städten ändern\n(e) Kuerzeste Route berechnen\n(f) Programm beenden\n");
-        printf("\nIhre Auswahl: ");
+        printf("\n---------| Waehlen Sie ihre Aktion |---------\n\n");
+        printf("(a) Entfernungstabelle laden\n");
+        printf("(b) Entfernungstabellespeichern\n");
+        printf("(c) Entfernungstabelle anzeigen\n");
+        printf("(d) Entfernung wischen zwei Staedten aendern\n");
+        printf("(e) Kuerzeste Route berechnen\n");
+        printf("(f) Programm beenden\n");
+        printf("\n--------------| Ihre Auswahl |---------------\n");
+        printf("-> ");
         scanf("%s", &ans); //Antwort in den char ans lesen
         switch(ans) //Abfrage aller Antwortmöglichkeiten
         {
@@ -425,8 +443,8 @@ int main()
                       break;
             case 'c': break;
             case 'd': break;
-            case 'e': shortestRoute(&tables); break;
-            case 'f': if (checkChanges(&tables, &readFile)) //Erst schauen, ob die Daten ich geändert haben
+            case 'e': shortestRoute(&tables);break;
+            case 'f': if (checkChanges(&tables, &readFile)&& ptrTables) //Erst schauen, ob die Daten ich geändert haben
                       {
                         char save;
                         while (save!='y'||save!='n') //Antwortmöglichkeiten auf y oder n reduzieren und wiederholen
@@ -436,6 +454,12 @@ int main()
                             if (save == 'y') //Wenn der Nutzer speichern möchte...
                             {
                                 writeCities(&tables); //...Speicherfunktion aufrufen
+                            }
+                            else
+                            {
+                                freeSpace(&tables); //..Nach beendigung Speicher wieder frei geben
+                                printf("understandable have a great day\n"); //Nachricht, dass das Programm beendet wurde
+                                return 0;
                             }
                         }
                       }
@@ -447,4 +471,3 @@ int main()
         }
     }
 }
-
