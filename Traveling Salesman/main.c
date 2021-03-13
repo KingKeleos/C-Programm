@@ -200,13 +200,13 @@ void writeCities(DistanceTable* tables)
             for (int j=0; j<5-1;j++)
             {
                 int distform = tables->distances[k].dist; //Distanz aus der Struktur lesen
-                itoa(distform, expoDist,10); //Integer in String convertieren
+                sprintf(expoDist, "%d",distform);
                 strncat(expoDist," ",1); //Leerzeichen anhängen
                 k++;
                 fputs(expoDist,fptr); //In Datei ausgeben
             }
             int distform = tables->distances[k].dist; //Letzer Schritt der Zeile wird ohne Leerzeichen  ausgeführt
-            itoa(distform, expoDist,10);
+            sprintf(expoDist, "%d",distform);
             k++;
             fputs(expoDist,fptr);
             fputs("\n",fptr); //Zeilenumbruch am Ende der Zeile
