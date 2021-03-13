@@ -1,4 +1,4 @@
-Berlin  Hamburg  Muenchen  Koeln  Frankfurt
+Berlin Hamburg Muenchen Koeln Frankfurt
 0 150 750 500 400
 150 0 800 350 450
 740 780 0 620 400

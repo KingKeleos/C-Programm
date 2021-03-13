@@ -200,13 +200,14 @@ void writeCities(DistanceTable* tables)
             for (int j=0; j<5-1;j++)
             {
                 int distform = tables->distances[k].dist; //Distanz aus der Struktur lesen
-//                itoa(distform, expoDist,10); //Integer in String convertieren
+                sprintf(expoDist, "%d", distform);
+                //itoa(distform, expoDist,10); //Integer in String convertieren
                 strncat(expoDist," ",1); //Leerzeichen anhängen
                 k++;
                 fputs(expoDist,fptr); //In Datei ausgeben
             }
             int distform = tables->distances[k].dist; //Letzer Schritt der Zeile wird ohne Leerzeichen  ausgeführt
-//            itoa(distform, expoDist,10);
+            sprintf(expoDist, "%d", distform);
             k++;
             fputs(expoDist,fptr);
             fputs("\n",fptr); //Zeilenumbruch am Ende der Zeile
@@ -302,7 +303,7 @@ void freeSpace(DistanceTable* tables)
 void heuristic(DistanceTable* tables, int start)
 {
 int currentCity = start;
-printf("%d\n",currentCity);
+//printf("%d\n",currentCity);
 int sumOfDistance=0;
 int usedCity[tables->n];
 int compareDist = 2147483647;
@@ -311,7 +312,7 @@ int testtest;
 for(int i=0; i<tables->n; i++)
 {
     usedCity[i]=0;
-    printf("%d\n", usedCity[i]);
+    //printf("%d\n", usedCity[i]);
 }
 for(int j=0; j<tables->n; j++)
 {
@@ -319,22 +320,22 @@ for(int i=0; i<tables->n*tables->n; i++)
 {
     if(currentCity == tables->distances[i].from)
     {
-        printf("%d ", i);
+        //printf("%d ", i);
         if(currentCity != tables->distances[i].to)
         {
-            printf("%d ", i);
+            //printf("%d ", i);
             if(usedCity[i%tables->n]==0)
             {
-                printf("%d ", i);
+                //printf("%d ", i);
                 if(tables->distances[i].to != start || j == tables->n-1)
                 {
-                    printf("%d ", i);
+                    //printf("%d ", i);
                     if(tables->distances[i].dist<compareDist)
                     {
                         testtest=tables->distances[i].dist;
-                        printf("%d ", testtest);
+                        //printf("%d ", testtest);
                         compareDist=tables->distances[i].dist;
-                        printf("%d ", compareDist);
+                        //printf("%d ", compareDist);
                         compareCity=tables->distances[i].to;
                     }
                 }
@@ -345,12 +346,11 @@ for(int i=0; i<tables->n*tables->n; i++)
 
 sumOfDistance=sumOfDistance+compareDist;
 compareDist= 2147483647;
-printf("\n Distanz betraegt: %d ", sumOfDistance);
+//printf("\n Distanz betraegt: %d ", sumOfDistance);
 usedCity[compareCity]=1;
 currentCity=compareCity;
-printf("\n");
+//printf("\n");
 }
-//sumOfDistance=sumOfDistance+tables->distances[start+currentCity*tables->n].dist;
 printf("\n Die kuerzeste Route berechnet nach dem heuristischen Verfahren mit der\nStartstadt %s betraegt: %d \n", tables->cities[start], sumOfDistance);
 }
 
