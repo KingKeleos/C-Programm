@@ -96,7 +96,7 @@ bool checkReadability(FILE *fpointer, DistanceTable* ptrTables) //Funktion Teste
     return true;
 }
 
-DistanceTable* readCities(DistanceTable* tables, char filename[]) //Funktion liest die komplette Dateim, wenn sie passt
+DistanceTable* readCities(DistanceTable* tables, char filename[]) //Funktion liest die komplette Datei, wenn sie passt
 {
     int lines=0; //ZeilenzählerVariable
     char *string; //String erstellen aus chars
@@ -190,18 +190,18 @@ void writeCities(DistanceTable* tables)
         scanf("%s", &saveFilename); //Dateinamen des Users auslesen
         FILE *fptr=fopen(saveFilename,"w"); //Ausgewählte datei wird nur geschrieben
         fseek(fptr, 0, SEEK_SET); // Datei von Anfang an durchsuchen
-        for (int i=0; i<5-1; i++) //Bei jeder Stadt, bis auf der letzen..
+        for (int i=0; i<tables->n-1; i++) //Bei jeder Stadt, bis auf der letzen..
         {
             char *citieform = tables->cities[i]; //citieform liest den Namen der Stadt aus
             strncat(citieform," ",1); //Dem Namen der Stadt ein Leerzeichen hinzufügen um differenzieren zu können
             fputs(citieform,fptr); //Transformierten Namen der Stadt in die Datei schreiben
         }
-        fputs(tables->cities[5-1],fptr); //Letzte Stadt ohne Leerzeichen speichern
+        fputs(tables->cities[tables->n-1],fptr); //Letzte Stadt ohne Leerzeichen speichern
         fputs("\n",fptr); //Zeilen Umbruch
         int k=0;
-        for (int i =0; i<5;i++) //5=tables->n
+        for (int i =0; i<tables->n;i++) //5=tables->n
         {
-            for (int j=0; j<5-1;j++) //5tables->n
+            for (int j=0; j<tables->n-1;j++) //5tables->n
             {
                 int distform = tables->distances[k].dist; //Distanz aus der Struktur lesen
                 sprintf(expoDist, "%d",distform);
@@ -240,7 +240,7 @@ bool checkChanges(DistanceTable* tables, char filename[])
         lines++;
         string=strtok(NULL," \t");
     }
-    if (lines!=5) //Wenn die Anzahl der Zeilen sich von der letzten Datei unterscheidet
+    if (lines!=tables->n) //Wenn die Anzahl der Zeilen sich von der letzten Datei unterscheidet
     {
         return true; //Wahr ausgeben
     }
@@ -256,10 +256,6 @@ bool checkChanges(DistanceTable* tables, char filename[])
         }
         i++;
         string=strtok(NULL, " \t");
-    }
-    if (i!=(sizeof(tables->cities))+1) //Wenn die Anzal der Einträge der Zeile sich geändert hat...
-    {
-        return true; //..Wahr ausgeben
     }
     int k=0; //DistanzIndex
     int n=0; //FromIndex
@@ -332,10 +328,11 @@ int main()
                       break;
             case 'b': writeCities(&tables);//Funktion zum schreiben der Daten öffnen
                       break;
-            case 'c': break;
+            case 'c':
+                        break;
             case 'd': break;
             case 'e': break;
-            case 'f': if (checkChanges(&tables, &readFile)&& ptrTables) //Erst schauen, ob die Daten ich geändert haben
+            case 'f': if ((ptrTables!=NULL) && checkChanges(&tables, &readFile)) //Erst schauen, ob die Daten ich geändert haben
                       {
                         char save;
                         while (save!='y'||save!='n') //Antwortmöglichkeiten auf y oder n reduzieren und wiederholen
@@ -348,13 +345,11 @@ int main()
                             }
                             else
                             {
-                                freeSpace(&tables); //..Nach beendigung Speicher wieder frei geben
                                 printf("understandable have a great day\n"); //Nachricht, dass das Programm beendet wurde
                                 return 0;
                             }
                         }
                       }
-                      freeSpace(&tables); //..Nach beendigung Speicher wieder frei geben
                       printf("understandable have a great day\n"); //Nachricht, dass das Programm beendet wurde
                       return 0;
                       break;
