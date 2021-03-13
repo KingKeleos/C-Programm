@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1615409818 source:e:\git\programme\traveling salesman\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<string.h>
+
