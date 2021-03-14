@@ -304,16 +304,13 @@ void freeSpace(DistanceTable* tables)
     free(tables->n); //Zuletzt die Anzahl der Städte freigeben
 }
 
-void printtable(DistanceTable* tables)
+void printtable(DistanceTable* tables)                                                                     //gibt die Tabelle aus
 {
-    // tables->n: Anzahl der Städte    tables->cities[index]: Namen der Städte   tables->distances[Index].from Index der Startstadt / tables->distances[Index].to Index der Zielsstadt
-    // tables->distances[Index].dist Distanz zwischen den Städten
-
     int citiesMax=0;
     int d[5];   //5 ist tables->n
     int f;
 
-    for (int i=0;i<5;i++){
+    for (int i=0;i<5;i++){                                                                                 //findet den längsten Städtenamen, um das Format der Tabelle anzupassen
             int j=0;
         while(tables->cities[i][j]!=0){
             j++;
@@ -329,8 +326,8 @@ void printtable(DistanceTable* tables)
         }
 
 
-    printf("| ");
-    for (int i=0;i<5;i++)//5 ist gleich tales->n
+    printf("| ");                                                                                          //fügt in der Tabelle eine Trennlinie hinzu
+    for (int i=0;i<5;i++)           //5 ist gleich tales->n
     {
         printf("%s | ", tables->cities[i]);
 
@@ -338,25 +335,25 @@ void printtable(DistanceTable* tables)
     printf("\n");
     int distIndex=0;
 
-    for (int i=0;i<5;i++){
+    for (int i=0;i<5;i++){            //5 ist gleich tables->n                                             //gibt die komplette Tabelle aus
             f=citiesMax-d[i];
-            printf("%s", tables->cities[i]);
+            printf("%s", tables->cities[i]);                                                               //als erstes wird die Stadt ausgegeben
             for (int j=0;j<f;j++){
-                printf(" ");                                //d[i]+2  count
+                printf(" ");
             }
-        for (int c=0;c<5;c++){
+        for (int c=0;c<5;c++){          //5 ist gleich tables->n                                           //die schleife formartiert die Tabelle
                 int count=0;
                 int cmp=tables->distances[distIndex].dist;
-                while(cmp){
+                while(cmp){                                                                                //hier wird die Anzahl der Stellen zum darstellen berechnet
                     count++;
                     cmp/=10;
                 }
             if(count==0){
                 count=1;
             }
-            int b=((d[c]+2)-count)/2;
+            int b=((d[c]+2)-count)/2;                                                                      //berechnet die Anzahl der Leerzeichen vor und nach der Zahl
             int e;
-            if(((d[c]+2)-count)%2){             //wenn nicht restlos durhc 2 teilbar
+            if(((d[c]+2)-count)%2){
                 e=b+1;
             }else{
                 e=b;
@@ -377,16 +374,16 @@ void printtable(DistanceTable* tables)
     }
 }
 
-bool citieExist(DistanceTable* tables,char citieSave[]){
-    for (int l=0;l<5;l++){
-        if (strcmp(tables->cities[l],citieSave)==0){
+bool citieExist(DistanceTable* tables,char citieSave[]){                                                   //Testet, ob die eingegebene Stadt existiert
+    for (int l=0;l<5;l++){                                                                                      //5 ist gleich tables->n
+        if (strcmp(tables->cities[l],citieSave)==0){                                                       //wenn eine Stadt gefunden wurde, gibt er "wahr" heraus
             return true;
         }
     }
     return false;
 }
-int getCitieIndex(DistanceTable* tables,char citieSave[]){
-    for (int l=0;l<5;l++){
+int getCitieIndex(DistanceTable* tables,char citieSave[]){                                                  //sucht nach dem Index der eingegebenen Stadt
+    for (int l=0;l<5;l++){                    //5 ist gleich tables->n
         if (strcmp(tables->cities[l],citieSave)==0){
             return l;
         }
@@ -394,35 +391,35 @@ int getCitieIndex(DistanceTable* tables,char citieSave[]){
     return -1;
 }
 
-void changeDist(DistanceTable* tables){
+void changeDist(DistanceTable* tables){                                                                       //ist für die Änderung der Distanzen zuständig
     char citie1[128];
     char citie2[128];
 
     printf("Welche Stadte moechten Sie aendern?\n");
     printf("Stadt Nr.1: ");
     scanf("%s", &citie1);
-    if (citieExist(tables,&citie1)){
-        int g1=getCitieIndex(tables,&citie1);
+    if (citieExist(tables,&citie1)){                                                                          //wenn die Stadt existiert, dann...
+        int g1=getCitieIndex(tables,&citie1);                                                                 //wird der Index in "g1" gespeichert
         printf("Stadt Nr.2: ");
         scanf("%s", &citie2);
-        if (citieExist(tables,citie2)&&(strcmp(citie1,citie2)!=0)){
-            int g2=getCitieIndex(tables,&citie2);
+        if (citieExist(tables,citie2)&&(strcmp(citie1,citie2)!=0)){                                           //wenn die zweite Stadt existiert, dann...
+            int g2=getCitieIndex(tables,&citie2);                                                             //wird der Index in "g2" gespeichert
             printf("\nDiese Staedte sind vorhanden\n");
             printf("Die momentane Distanz zwischen den beiden Staedten ist: \n");
-            int k1=g1*5+g2;
-            printf("%s -> %s %d\n",tables->cities[g1],tables->cities[g2], tables->distances[k1].dist);
-            int k2=g2*5+g1;
-            printf("%s -> %s %d\n",tables->cities[g2],tables->cities[g1], tables->distances[k2].dist);
+            int k1=g1*5+g2;                                                                                   //findet den ersten Index der Distanz für die Städte heraus
+            printf("%s -> %s %d\n",tables->cities[g1],tables->cities[g2], tables->distances[k1].dist);        //zeigt die Distanz zwischen den Städten an
+            int k2=g2*5+g1;                                                                                   //findet den zweiten Index der Distanz für die Städte heraus
+            printf("%s -> %s %d\n",tables->cities[g2],tables->cities[g1], tables->distances[k2].dist);        //zeigt die Distanz zwischen den Städten an
             int nd1=-32;
             int nd2=-23;
-            while(nd1<0){
+            while(nd1<0){                                                                                     //wiederholt solange, bis die eingegebene Zahl positiv ist
                 printf("Neue Distanz fuer %s -> %s: ",tables->cities[g1],tables->cities[g2]);
                 scanf("%d", &nd1);
                 if(nd1<0){
                     printf("Die Zahl muss positiv sein\n");
                 }
             }
-            while(nd2<0){
+            while(nd2<0){                                                                                     //wiederholt solange, bis die eingegebene Zahl positiv ist
                 printf("Neue Distanz fuer %s -> %s: ",tables->cities[g2],tables->cities[g1]);
                 scanf("%d", &nd2);
                 if(nd2<0){
@@ -442,13 +439,7 @@ void changeDist(DistanceTable* tables){
         printf("\nDiese Stadt ist nicht in unserer Datenbank zu finden.");
     }
 
-
-
-
-
 }
-
-
 
 int main()
 {
