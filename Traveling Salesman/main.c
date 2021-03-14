@@ -22,6 +22,19 @@ typedef struct // Forgegebene Struktur
     char **cities; // Pointer Feld der Staedtenamen
     Distance *distances; //Pointer auf Feld vom Typ Distance
     } DistanceTable;
+void deleteSpace(DistanceTable* tables)                                                                            //Funktion leert den Speicher
+{
+    for (int i=0; i<tables->n;i++)
+    {
+        free(tables->cities[i]);                                                                                   //Allokierter Speicher wird für die Staedte freigegeben
+    }
+    for (int k=0; k<(tables->n*tables->n);k++)
+    {
+        free(tables->distances[k].to);                                                                             //Allokierter Speicher für alle Daten in der Distanz Struktur wird freigegeben
+        free(tables->distances[k].from);
+        free(tables->distances[k].dist);
+    }
+}
 
 bool checkReadability(FILE *fpointer, DistanceTable* ptrTables) //Funktion Testet, ob die zu lesende Datei konform der Regeln ist
 {
@@ -485,13 +498,13 @@ int main()
                             }
                             else
                             {
-                                freeSpace(&tables); //..Nach beendigung Speicher wieder frei geben
+                                deleteSpace(&tables); //..Nach beendigung Speicher wieder frei geben
                                 printf("understandable have a great day\n"); //Nachricht, dass das Programm beendet wurde
                                 return 0;
                             }
                         }
                       }
-                      //freeSpace(&tables); //..Nach beendigung Speicher wieder frei geben
+                      deleteSpace(&tables); //..Nach beendigung Speicher wieder frei geben
                       printf("understandable have a great day\n"); //Nachricht, dass das Programm beendet wurde
                       return 0;
                       break;
