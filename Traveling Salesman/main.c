@@ -307,6 +307,14 @@ void freeSpace(DistanceTable* tables)
     free(tables->n); //Zuletzt die Anzahl der Städte freigeben
 }
 
+void swap(int *a, int *b)
+{
+   int t;
+
+   t  = *b;
+   *b = *a;
+   *a = t;
+}
 
 void heuristic(DistanceTable* tables, int start)
 {
@@ -365,9 +373,99 @@ currentCity=compareCity;
 printf("\n Die kuerzeste Route berechnet nach dem heuristischen Verfahren mit der\nStartstadt %s betraegt: %d \n", tables->cities[start], sumOfDistance);
 }
 
+int calcPermutations(DistanceTable* tables, int start, int permutation[], int compareDist)
+{
+    int sumDist=0;
+    int currentCity=start;
+    int travelRoute[tables->n+1];
+    travelRoute[0]=start;
+    travelRoute[tables->n]=start;
+    for(int i=1; i<tables->n; i++)
+    {
+        travelRoute[i]=permutation[i-1];
+    }
+
+    /*for(int i=0; i<tables->n+1;i++)
+            printf("%d -> ", travelRoute[i]);
+            printf("\n");
+    */
+    for(int i=0; i<tables->n; i++)
+    {
+        int j=currentCity*tables->n+travelRoute[i+1];
+        //printf("%d\n", j);
+        sumDist=sumDist+tables->distances[j].dist;
+        currentCity=travelRoute[i+1];
+    }
+   return sumDist;
+}
+
+int permutate(DistanceTable* tables, int start, int permutation[], int cid, int compareDist, int counter, int* distances[], int sizearray)
+{
+    int dist=0;
+    int copyPermutation[tables->n-1];
+    for(int i=0; i<tables->n-1; i++)
+    copyPermutation[i]=permutation[i];
+    dist=calcPermutations(tables, start, permutation, compareDist);
+    if(dist<compareDist)
+    compareDist=dist;
+
+
+    /*
+    for (int i=cid;i<tables->n-1;i++)
+     {
+        swap(&permutation[cid],&permutation[i]);
+        cid++;
+        if(cid == tables->n-1)
+        {
+        int dist=calcPermutations(tables, start, permutation, compareDist);
+        //printf("Index: %d\n", cid);
+       // printf("Buffer: %d\n", dist);
+       if(dist<compareDist)
+        {distances[counter]=dist;
+        //printf("Geringste: %d\n", compareDist);
+        //printf("%d\n",counter);
+        for(int i=0; i<tables->n-1;i++)
+        printf("%d ", permutation[i]);
+        printf("%d\n", distances[counter]);
+        counter++;
+        compareDist=dist;
+        }
+        permutate(tables, start, permutation, cid, compareDist, counter, distances);
+        cid--;
+        swap(&permutation[cid],&permutation[i]);
+     }
+    return dist;*/
+}
+
 
 void exact(DistanceTable* tables, int start)
 {
+    int temp;
+    int counter=0;
+    int compareDist = 2147483647;
+    int permutation[tables->n-1];
+    int k=0;
+    int cid=0;
+    int final=0;
+    int sizearray=1;
+     for(int i=1; i<tables->n; i++)
+        sizearray=sizearray*i;
+     int distances[sizearray];
+    for(int i=0; i<tables->n; i++)
+    {
+        permutation[i]=0;
+        if(tables->distances[i].to != start)
+        {
+            permutation[k]=tables->distances[i].to;
+            k++;
+        }
+    }
+   /* for(int i=0; i<tables->n-1;i++)
+    printf("%d ", permutation[i]);*/
+    // Permutationen werden gebildet
+    printf("\n");
+    final=permutate(tables, start, permutation, cid, compareDist, counter, &distances, sizearray);
+    printf("\n Die kuerzeste Route berechnet nach dem exakten Verfahren mit der\nStartstadt %s betraegt: %d \n", tables->cities[start], final);
 
 }
 
